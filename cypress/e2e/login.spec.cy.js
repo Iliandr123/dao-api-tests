@@ -5,7 +5,7 @@ let screenshotName = '';
 
 describe('Test User Login', () => {
   it('My test', () => {
-    cy.visit('http://localhost:3000/');
+    cy.visit('/');
     cy.contains('Connect').click();
 
     cy.get('.walletconnect-qrcode__image').screenshot('qrcode', {

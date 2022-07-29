@@ -62,6 +62,8 @@ describe('group api controllers test', () => {
 
   it.skip('transfer ethers proposal', async () => { // TO DO: didn't work how it need.
 
+    const expectedErrorMessage = 'Error: The DAO group has only 0.0 ETH. The amount in the request is greater than the balance amount';
+
     const requestBody = {
       "type": TransactionType.TRANSFER_ETH,
       "userId": mockOwnerId,
@@ -76,8 +78,8 @@ describe('group api controllers test', () => {
       .post(`${BASE_URL}/proposals/create`)
       .withHeaders('telegramData', JSON.stringify(mockPersonalTelegramData))
       .withJson(requestBody)
-      .expectStatus(201)
-      .retry(3);
+      .expectStatus(500)
+      .expectBodyContains(expectedErrorMessage)
   });
 
   it('try to create contract interaction proposal, but DAO balance is zero', async () => {
@@ -91,7 +93,7 @@ describe('group api controllers test', () => {
       "tokenSymbol": "ETH"
     }
 
-    const expectedErrorMessage = 'Error: The DAO group has only 0 ETH. The amount in the request is greater than the balance amount';
+    const expectedErrorMessage = 'Error: The DAO group has only 0.0 ETH. The amount in the request is greater than the balance amount';
 
     console.log("APROVE TRANSACTION IN YOUR METAMASK APP IN 50 SEC")
 
