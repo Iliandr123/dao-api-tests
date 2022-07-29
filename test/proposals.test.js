@@ -18,6 +18,32 @@ describe('group api controllers test', () => {
   
   let proposalId;
 
+  it('try to create non-exist proposal', async () => {
+
+    const nonExistProposal = 'lorem inpsum'
+
+    const requestBody = {
+      "type": nonExistProposal,
+      "userId": mockOwnerId,
+      "groupId": DaoGroupId,
+      "address": mockAddressForAdd,
+      "threshold": 1
+    }
+
+    const expectedResponse = {
+      "statusCode": 500,
+      "message": "The proposal action lorem inpsum not found"
+  }
+    
+    await spec()
+    .post(`${BASE_URL}/proposals/create`)
+    .withHeaders('telegramData', JSON.stringify(mockPersonalTelegramData))
+    .withJson(requestBody)
+    .expectStatus(500)
+    .expectJson(expectedResponse)
+    .retry(3);
+});
+
   it('add participant proposal', async () => {
 
     const requestBody = {
@@ -60,7 +86,7 @@ describe('group api controllers test', () => {
       .retry(3);
   });
 
-  it.skip('transfer ethers proposal', async () => { // TO DO: didn't work how it need.
+  it('transfer ethers proposal', async () => {
 
     const expectedErrorMessage = 'Error: The DAO group has only 0.0 ETH. The amount in the request is greater than the balance amount';
 
@@ -118,7 +144,18 @@ describe('group api controllers test', () => {
     .retry(3);
   });
 
-  it('get partical created proposal by it id', async () => {
+  it('try to get non-exist proposal by it id', async () => {
+
+    const nonExistProposal = 999999
+
+    await spec()
+      .get(`${BASE_URL}/proposals/${nonExistProposal}`)
+      .withHeaders('telegramData', JSON.stringify(mockPersonalTelegramData))
+      .expectStatus(500)
+      .retry(3);
+    });
+
+  it('get particular created proposal by it id', async () => {
 
     await spec()
       .get(`${BASE_URL}/proposals/${proposalId}`)
@@ -128,14 +165,28 @@ describe('group api controllers test', () => {
       .retry(3);
     });
 
+  it('Try to vote for non-exist proposal', async () => {
+
+    const expectedResponse = {
+      "statusCode": 500,
+      "message": "Error: Proposal not found"
+    }
+
+    const nonExistProposal = 999999
+
+    await spec()
+      .put(`${BASE_URL}/proposals/vote?proposalId=${nonExistProposal}`)
+      .withHeaders('telegramData', JSON.stringify(mockPersonalTelegramData))
+      .expectJson(expectedResponse)
+      .expectStatus(500)
+  }); 
+
   it('Vote for proposal', async () => {
 
     await spec()
       .put(`${BASE_URL}/proposals/vote?proposalId=${proposalId}`)
       .withHeaders('telegramData', JSON.stringify(mockPersonalTelegramData))
       .expectStatus(200)
-      // .retry(3);
-
   });
   
   it('Execute proposal id, but zero DAO balance', async () => {
