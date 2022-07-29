@@ -15,15 +15,7 @@ const validSchemaGetProposals = {
           "dateCreated": {"type": "integer"},
           "confirmedByUser": {"type": "boolean"},
           "canBeExecuted": {"type": "boolean"},
-          // "user": {
-          //   "type": "object",
-          //   "properties": {
-          //     "username": {"type": "string"},
-          //   }
-          // },
           "address": {"type": "string"},
-          // "amountOfFunds": {"type": "string"},
-          // "tokenSymbol": {"type": "string"},
         },
       }],
     },

@@ -73,6 +73,29 @@ it('init DAO, should takes gnosis DAO address', async () => {
     .expectStatus(201)
 });
 
+it('Try to init DAO that already is initialized', async () => {
+
+  const requestBody = {
+    "groupId": mockGroupId,
+    "owners": mockParticipantsList,
+    "threshold": 1
+  };
+
+  const expectedResponse = {
+    "statusCode": 500,
+    "message": "DAO has already been initialized"
+}
+
+  console.log("APROVE INITING DAO IN YOUR METAMASK APP IN 50 SEC")
+
+  await spec()
+    .post(`${BASE_URL}/groups/initDao`)
+    .withHeaders('telegramData', JSON.stringify(mockPersonalTelegramData))
+    .withJson(requestBody)
+    .expectStatus(500)
+    .expectJson(expectedResponse);
+});
+
 it('Check DAO balance for new created DAO group should work and contain zero balance', async () => {
 
   const expectedJsonSchema = validSchemaGetDaoBalance
@@ -93,4 +116,21 @@ it('Check DAO balance for new created DAO group should work and contain zero bal
     expect(_spec.body[0].balance).to.equal('0');
     expect(_spec.body[0].tokenSymbol).to.equal('ETH');
   });
+
+  it('Check DAO balance of non-exist group', async () => {
+
+    const expectedResponse = {
+      "statusCode": 500,
+      "message": "Cannot read properties of null (reading 'DAOaddress')"
+    }
+
+    const nonExistGroup = -111111111
+  
+    await spec()
+      .get(`${BASE_URL}/dao/getBalance/${nonExistGroup}`)
+      .withHeaders('telegramData', JSON.stringify(mockPersonalTelegramData))
+      .expectStatus(500)
+      .expectJson(expectedResponse)
+      .retry(3);
+    });
 });
