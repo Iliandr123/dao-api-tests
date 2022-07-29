@@ -106,14 +106,13 @@ describe('group api controllers test', () => {
   
   it('get all created proposals, should be 2', async () => {
     
-    // const expectedSchema = validSchemaGetProposals
+    const expectedSchema = validSchemaGetProposals
     
     await spec()
     .get(`${BASE_URL}/proposals/?pageNumber=1&groupId=${DaoGroupId}&status=voting`)
     .withHeaders('telegramData', JSON.stringify(mockPersonalTelegramData))
     .expectStatus(200)
-    .expectJsonLength(2)
-    // .expectJsonSchema(expectedSchema)
+    .expectJsonSchema(expectedSchema)
     .retry(3);
   });
 
